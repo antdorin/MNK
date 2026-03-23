@@ -2,8 +2,9 @@ import Foundation
 
 class WebSocketManager: NSObject, ObservableObject {
 
-    @Published var isConnected  = false
+    @Published var isConnected   = false
     @Published var statusMessage = "Not connected"
+    @Published var mouseSpeed: Double = 2.0   // drag-delta multiplier
 
     private var task: URLSessionWebSocketTask?
     private lazy var session: URLSession = {
