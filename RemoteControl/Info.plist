@@ -29,6 +29,10 @@
     <key>UIApplicationSupportsMultipleScenes</key>
     <false/>
   </dict>
+  <key>UIStatusBarHidden</key>
+  <true/>
+  <key>UIViewControllerBasedStatusBarAppearance</key>
+  <false/>
   <key>UILaunchScreen</key>
   <dict/>
   <key>UISupportedInterfaceOrientations</key>

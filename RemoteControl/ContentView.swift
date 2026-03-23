@@ -53,6 +53,7 @@ struct ContentView: View {
             .ignoresSafeArea()
         }
         .preferredColorScheme(.dark)
+        .statusBarHidden(true)
         .sheet(isPresented: $showConnection) {
             NavigationStack {
                 ConnectionView()
