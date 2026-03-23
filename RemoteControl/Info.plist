@@ -36,10 +36,7 @@
   <key>UIRequiresFullScreen</key>
   <true/>
   <key>UILaunchScreen</key>
-  <dict>
-    <key>UIColorName</key>
-    <string>black</string>
-  </dict>
+  <dict/>
   <key>UISupportedInterfaceOrientations</key>
   <array>
     <string>UIInterfaceOrientationPortrait</string>
