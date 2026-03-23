@@ -1,0 +1,50 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:      # Allow manual trigger from GitHub Actions UI
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build (unsigned — ready for AltStore sideload)
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -scheme RemoteControl \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            ONLY_ACTIVE_ARCH=NO \
+            CODE_SIGNING_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CONFIGURATION_BUILD_DIR="$GITHUB_WORKSPACE/build/Products" \
+            BUILT_PRODUCTS_DIR="$GITHUB_WORKSPACE/build/Products" \
+            2>&1 | tee build.log
+          echo "Exit code: $?"
+
+      - name: Package as IPA
+        run: |
+          mkdir -p Payload
+          cp -r build/Products/RemoteControl.app Payload/
+          zip -r RemoteControl.ipa Payload/
+          echo "IPA size: $(du -sh RemoteControl.ipa | cut -f1)"
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RemoteControl-IPA-${{ github.sha }}
+          path: RemoteControl.ipa
+          retention-days: 30

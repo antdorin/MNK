@@ -1,0 +1,22 @@
+name: RemoteControl
+
+options:
+  deploymentTarget:
+    iOS: "16.0"
+
+targets:
+  RemoteControl:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: RemoteControl
+    info:
+      path: RemoteControl/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.remotecontrol.app
+        SWIFT_VERSION: "5.9"
+        IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ENABLE_BITCODE: NO
