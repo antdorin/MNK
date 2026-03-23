@@ -4,7 +4,8 @@ class WebSocketManager: NSObject, ObservableObject {
 
     @Published var isConnected   = false
     @Published var statusMessage = "Not connected"
-    @Published var mouseSpeed: Double = 2.0   // drag-delta multiplier
+    @Published var mouseSpeed: Double = 2.0   // drag-delta multiplier (0.5–10.0)
+    @Published var gamingMode    = false       // visual toggle, sent with events if needed
 
     private var task: URLSessionWebSocketTask?
     private lazy var session: URLSession = {

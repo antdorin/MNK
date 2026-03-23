@@ -11,14 +11,11 @@ struct ContentView: View {
                     .environmentObject(wsManager)
                     .ignoresSafeArea()
 
-                TopControlPanel(
-                    safeAreaTop: geo.safeAreaInsets.top,
+                CustomKeyboardPanel(
+                    safeAreaBottom: geo.safeAreaInsets.bottom,
                     onConnect: { showConnection = true }
                 )
                 .environmentObject(wsManager)
-
-                CustomKeyboardPanel(safeAreaBottom: geo.safeAreaInsets.bottom)
-                    .environmentObject(wsManager)
             }
             .ignoresSafeArea()
         }
