@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 class WebSocketManager: NSObject, ObservableObject {
 
@@ -6,6 +7,7 @@ class WebSocketManager: NSObject, ObservableObject {
     @Published var statusMessage = "Not connected"
     @Published var mouseSpeed: Double = 2.0   // drag-delta multiplier (0.5–10.0)
     @Published var gamingMode    = false       // visual toggle, sent with events if needed
+    @Published var trackpadColor: Color = .black
 
     private var task: URLSessionWebSocketTask?
     private lazy var session: URLSession = {

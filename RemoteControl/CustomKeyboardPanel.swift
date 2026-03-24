@@ -20,6 +20,14 @@ struct CustomKeyboardPanel: View {
         ["z","x","c","v","b","n","m"]
     ]
 
+    private let bgColors: [(String, Color)] = [
+        ("Black",    .black),
+        ("Dark Gray", Color(white: 0.15)),
+        ("Navy",     Color(red: 0.05, green: 0.05, blue: 0.2)),
+        ("Charcoal", Color(red: 0.12, green: 0.12, blue: 0.14)),
+        ("Midnight", Color(red: 0.08, green: 0.02, blue: 0.15)),
+    ]
+
     private var panelOffset: CGFloat {
         let base = isOpen ? 0 : (openHeight - collapsedHeight)
         return max(0, min(openHeight, base + dragOffset))
@@ -37,80 +45,60 @@ struct CustomKeyboardPanel: View {
                     }
                 }
 
-            VStack(spacing: 10) {
+            VStack(spacing: 3) {
                 // QWERTY rows
                 ForEach(rows, id: \.self) { row in
-                    HStack(spacing: 5) {
+                    HStack(spacing: 3) {
                         ForEach(row, id: \.self) { key in
-                            keyButton(title: key) {
+                            uniButton(title: key) {
                                 wsManager.send(["type": "keydown", "key": key])
                             }
                         }
                     }
                 }
 
-                // Utility row 1: Tab / Space / Backspace
-                HStack(spacing: 5) {
-                    wideButton(title: "Tab", icon: "arrow.right.to.line") {
-                        wsManager.send(["type": "keydown", "key": "Tab"])
+                // Utility row 1: Enter / Space / Del
+                HStack(spacing: 3) {
+                    uniButton(title: "⏎") {
+                        wsManager.send(["type": "keydown", "key": "Return"])
                     }
-                    Button {
+                    uniButton(title: "Space", stretch: true) {
                         wsManager.send(["type": "keydown", "key": " "])
-                    } label: {
-                        Text("Space")
-                            .font(.system(size: 15, weight: .semibold))
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 46)
-                            .background(Color.white.opacity(0.12))
-                            .cornerRadius(10)
                     }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.white)
-
-                    wideButton(title: "Del", icon: "delete.left") {
+                    uniButton(title: "⌫") {
                         wsManager.send(["type": "keydown", "key": "Backspace"])
                     }
                 }
 
-                // Utility row 2: Esc / Return / Settings / Gaming / Hide
-                HStack(spacing: 5) {
-                    wideButton(title: "Esc", icon: nil) {
+                // Utility row 2: Esc / Tab / ⚙ / 🎮 / Hide
+                HStack(spacing: 3) {
+                    uniButton(title: "Esc") {
                         wsManager.send(["type": "keydown", "key": "Escape"])
                     }
-                    wideButton(title: "⏎", icon: nil) {
-                        wsManager.send(["type": "keydown", "key": "Return"])
+                    uniButton(title: "Tab") {
+                        wsManager.send(["type": "keydown", "key": "Tab"])
                     }
-
-                    // Settings (opens top control panel)
-                    Button {
+                    uniButton(title: "⚙", highlight: showSettings) {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.82)) {
                             showSettings.toggle()
                         }
-                    } label: {
-                        Image(systemName: "gearshape.fill")
-                            .font(.system(size: 16))
-                            .frame(width: 46, height: 46)
-                            .background(showSettings ? Color.accentColor.opacity(0.3) : Color.white.opacity(0.12))
-                            .cornerRadius(10)
                     }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.white)
-
-                    // Gaming mode toggle
+                    // Gaming mode
                     Button {
                         wsManager.gamingMode.toggle()
                     } label: {
                         Image(systemName: "gamecontroller.fill")
                             .font(.system(size: 16))
-                            .frame(width: 46, height: 46)
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 46)
                             .background(wsManager.gamingMode ? Color.red.opacity(0.35) : Color.white.opacity(0.08))
-                            .cornerRadius(10)
+                            .cornerRadius(8)
                             .shadow(color: wsManager.gamingMode ? .red.opacity(0.7) : .clear, radius: 8)
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(wsManager.gamingMode ? .red : Color(.systemGray))
 
-                    wideButton(title: "Hide", icon: "chevron.down") {
+                    uniButton(title: "▾") {
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.82)) {
                             isOpen = false
                             showSettings = false
@@ -124,12 +112,12 @@ struct CustomKeyboardPanel: View {
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
-            .padding(.horizontal, 8)
+            .padding(.horizontal, 4)
             .padding(.top, 6)
             .padding(.bottom, max(safeAreaBottom, 8))
         }
         .frame(maxWidth: .infinity)
-        .frame(height: (showSettings ? openHeight + 60 : openHeight) + safeAreaBottom)
+        .frame(height: (showSettings ? openHeight + 100 : openHeight) + safeAreaBottom)
         .background(.ultraThinMaterial)
         .clipShape(RoundedCorner(radius: 20, corners: [.topLeft, .topRight]))
         .offset(y: panelOffset)
@@ -148,52 +136,76 @@ struct CustomKeyboardPanel: View {
         )
     }
 
-    // MARK: – Settings row (replaces TopControlPanel)
+    // MARK: – Settings row
 
     private var settingsRow: some View {
-        HStack(spacing: 8) {
-            // Connection status + button
-            Button(action: onConnect) {
-                HStack(spacing: 5) {
-                    Circle()
-                        .fill(wsManager.isConnected ? Color.green : Color.red)
-                        .frame(width: 7, height: 7)
-                    Image(systemName: wsManager.isConnected ? "wifi" : "wifi.slash")
-                        .font(.system(size: 14))
-                }
-                .frame(height: 40)
-                .padding(.horizontal, 10)
-                .background(Color.white.opacity(0.12))
-                .cornerRadius(10)
-            }
-            .buttonStyle(.plain)
-            .foregroundStyle(wsManager.isConnected ? .green : .red)
-
-            // Speed slider
-            Image(systemName: "cursorarrow.motionlines")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-            Slider(value: $wsManager.mouseSpeed, in: 0.5...10.0, step: 0.5)
-                .tint(.accentColor)
-            Text(String(format: "%.1fx", wsManager.mouseSpeed))
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-                .monospacedDigit()
-                .frame(width: 36, alignment: .trailing)
-
-            // Snooze
-            Button {
-                wsManager.send(["type": "alarm-snooze"])
-            } label: {
-                Text("Snooze")
-                    .font(.caption2.weight(.semibold))
+        VStack(spacing: 8) {
+            HStack(spacing: 8) {
+                // Connection
+                Button(action: onConnect) {
+                    HStack(spacing: 5) {
+                        Circle()
+                            .fill(wsManager.isConnected ? Color.green : Color.red)
+                            .frame(width: 7, height: 7)
+                        Image(systemName: wsManager.isConnected ? "wifi" : "wifi.slash")
+                            .font(.system(size: 14))
+                    }
+                    .frame(maxWidth: .infinity)
                     .frame(height: 40)
-                    .padding(.horizontal, 10)
-                    .background(Color.blue.opacity(0.28))
+                    .background(Color.white.opacity(0.12))
                     .cornerRadius(10)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(wsManager.isConnected ? .green : .red)
+
+                // Speed slider
+                Image(systemName: "cursorarrow.motionlines")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Slider(value: $wsManager.mouseSpeed, in: 0.5...10.0, step: 0.5)
+                    .tint(.accentColor)
+                Text(String(format: "%.1fx", wsManager.mouseSpeed))
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .monospacedDigit()
+                    .frame(width: 36, alignment: .trailing)
+
+                // Snooze
+                Button {
+                    wsManager.send(["type": "alarm-snooze"])
+                } label: {
+                    Text("Snooze")
+                        .font(.caption2.weight(.semibold))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 40)
+                        .background(Color.blue.opacity(0.28))
+                        .cornerRadius(10)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(.white)
             }
-            .buttonStyle(.plain)
-            .foregroundStyle(.white)
+
+            // Background color picker
+            HStack(spacing: 6) {
+                Text("BG")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                ForEach(bgColors, id: \.0) { name, color in
+                    Button {
+                        wsManager.trackpadColor = color
+                    } label: {
+                        Circle()
+                            .fill(color)
+                            .frame(width: 28, height: 28)
+                            .overlay(
+                                Circle()
+                                    .strokeBorder(Color.white, lineWidth: wsManager.trackpadColor == color ? 2 : 0)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                }
+                Spacer()
+            }
         }
         .padding(.horizontal, 4)
         .padding(.vertical, 4)
@@ -214,39 +226,17 @@ struct CustomKeyboardPanel: View {
         }
     }
 
-    // MARK: – Key buttons
+    // MARK: – Uniform button (same size for everything)
 
     @ViewBuilder
-    private func keyButton(title: String, action: @escaping () -> Void) -> some View {
+    private func uniButton(title: String, stretch: Bool = false, highlight: Bool = false, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(title)
-                .font(.system(size: 20, weight: .medium))
+                .font(.system(size: title.count == 1 ? 20 : 15, weight: title.count == 1 ? .medium : .semibold))
                 .frame(maxWidth: .infinity)
                 .frame(height: 46)
-                .background(Color.white.opacity(0.1))
-                .cornerRadius(10)
-        }
-        .buttonStyle(.plain)
-        .foregroundStyle(.white)
-    }
-
-    @ViewBuilder
-    private func wideButton(title: String, icon: String? = nil, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Group {
-                if let icon {
-                    Label(title, systemImage: icon)
-                        .labelStyle(.iconOnly)
-                        .font(.system(size: 16))
-                } else {
-                    Text(title)
-                        .font(.system(size: 15, weight: .semibold))
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 46)
-            .background(Color.white.opacity(0.12))
-            .cornerRadius(10)
+                .background(highlight ? Color.accentColor.opacity(0.3) : Color.white.opacity(0.1))
+                .cornerRadius(8)
         }
         .buttonStyle(.plain)
         .foregroundStyle(.white)

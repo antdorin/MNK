@@ -12,7 +12,7 @@ struct TrackpadView: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UIView {
         let view = UIView()
-        view.backgroundColor = .black
+        view.backgroundColor = UIColor(wsManager.trackpadColor)
         view.isMultipleTouchEnabled = true
 
         // Double tap (must be registered first so single can require-fail it)
@@ -52,6 +52,7 @@ struct TrackpadView: UIViewRepresentable {
 
     func updateUIView(_ uiView: UIView, context: Context) {
         context.coordinator.wsManager = wsManager
+        uiView.backgroundColor = UIColor(wsManager.trackpadColor)
     }
 
     func makeCoordinator() -> Coordinator { Coordinator(wsManager: wsManager) }
