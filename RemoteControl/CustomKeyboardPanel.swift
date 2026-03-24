@@ -117,7 +117,7 @@ struct CustomKeyboardPanel: View {
             .padding(.bottom, max(safeAreaBottom, 8))
         }
         .frame(maxWidth: .infinity)
-        .frame(height: (showSettings ? openHeight + 100 : openHeight) + safeAreaBottom)
+        .frame(height: (showSettings ? openHeight + 140 : openHeight) + safeAreaBottom)
         .background(.ultraThinMaterial)
         .clipShape(RoundedCorner(radius: 20, corners: [.topLeft, .topRight]))
         .offset(y: panelOffset)
@@ -204,6 +204,39 @@ struct CustomKeyboardPanel: View {
                     }
                     .buttonStyle(.plain)
                 }
+                Spacer()
+            }
+
+            // Gaming button bindings
+            HStack(spacing: 8) {
+                Image(systemName: "gamecontroller.fill")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+
+                Text("L")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.red)
+                Picker("", selection: $wsManager.gamingButton1) {
+                    ForEach(GamingAction.allCases) { a in
+                        Text(a.rawValue).tag(a)
+                    }
+                }
+                .pickerStyle(.menu)
+                .tint(.red)
+                .labelsHidden()
+
+                Text("R")
+                    .font(.caption2.weight(.bold))
+                    .foregroundStyle(.blue)
+                Picker("", selection: $wsManager.gamingButton2) {
+                    ForEach(GamingAction.allCases) { a in
+                        Text(a.rawValue).tag(a)
+                    }
+                }
+                .pickerStyle(.menu)
+                .tint(.blue)
+                .labelsHidden()
+
                 Spacer()
             }
         }

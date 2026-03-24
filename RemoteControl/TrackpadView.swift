@@ -72,6 +72,17 @@ struct TrackpadView: UIViewRepresentable {
         }
 
         @objc func handleMovePan(_ g: UIPanGestureRecognizer) {
+            // Gaming mode: track finger position for floating overlay
+            if wsManager.gamingMode {
+                switch g.state {
+                case .began, .changed:
+                    wsManager.gamingTouchLocation = g.location(in: g.view)
+                case .ended, .cancelled, .failed:
+                    wsManager.gamingTouchLocation = nil
+                default: break
+                }
+            }
+
             guard g.state == .changed else { return }
             let d = g.translation(in: g.view)
             g.setTranslation(.zero, in: g.view)
