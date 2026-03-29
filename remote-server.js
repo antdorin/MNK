@@ -17,7 +17,7 @@ const DEFAULT_TOUCH_MOUSE_SETTINGS = {
   secondaryTap: 'right',
   longPress: 'double',
   scrollGesture: 'two-finger',
-  scrollSpeed: 100,
+  scrollSpeed: 200,
 };
 
 function normalizeAction(value, fallback) {

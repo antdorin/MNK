@@ -3,7 +3,8 @@ import UIKit
 
 // MARK: – Full-screen trackpad using UIKit gesture recognizers
 //  • 1-finger tap      → left click
-//  • 1-finger double   → right click
+//  • 1-finger double   → double left click
+//  • 2-finger tap      → right click
 //  • 1-finger drag     → mouse move  (velocity scaled by wsManager.mouseSpeed)
 //  • 2-finger drag     → scroll
 
@@ -30,6 +31,13 @@ struct TrackpadView: UIViewRepresentable {
         singleTap.numberOfTouchesRequired = 1
         singleTap.require(toFail: doubleTap)
 
+        // 2-finger tap → right click
+        let twoFingerTap = UITapGestureRecognizer(
+            target: context.coordinator,
+            action: #selector(Coordinator.handleTwoFingerTap))
+        twoFingerTap.numberOfTapsRequired = 1
+        twoFingerTap.numberOfTouchesRequired = 2
+
         // 1-finger pan → mouse move
         let movePan = UIPanGestureRecognizer(
             target: context.coordinator,
@@ -46,7 +54,7 @@ struct TrackpadView: UIViewRepresentable {
         scrollPan.maximumNumberOfTouches = 2
         scrollPan.delegate = context.coordinator
 
-        [doubleTap, singleTap, movePan, scrollPan].forEach { view.addGestureRecognizer($0) }
+        [doubleTap, singleTap, twoFingerTap, movePan, scrollPan].forEach { view.addGestureRecognizer($0) }
         return view
     }
 
@@ -68,6 +76,10 @@ struct TrackpadView: UIViewRepresentable {
         }
 
         @objc func handleDoubleTap(_ g: UITapGestureRecognizer) {
+            wsManager.send(["type": "click", "button": "left", "double": true])
+        }
+
+        @objc func handleTwoFingerTap(_ g: UITapGestureRecognizer) {
             wsManager.send(["type": "click", "button": "right"])
         }
 
@@ -97,8 +109,13 @@ struct TrackpadView: UIViewRepresentable {
             guard g.state == .changed else { return }
             let d = g.translation(in: g.view)
             g.setTranslation(.zero, in: g.view)
-            let amt = Int(d.y / 5)
-            if amt != 0 { wsManager.send(["type": "scroll", "dy": amt]) }
+
+            // Increase responsiveness and keep tiny drags from being dropped.
+            let scaled = d.y * 0.8
+            let amt = Int(scaled.rounded())
+            if amt != 0 {
+                wsManager.send(["type": "scroll", "dy": amt])
+            }
         }
 
         // Allow 1-finger and 2-finger pans to coexist without cancelling each other

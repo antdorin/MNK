@@ -75,7 +75,7 @@ const DEFAULT_REMOTE_TOUCH_SETTINGS = {
   secondaryTap: 'right',
   longPress: 'double',
   scrollGesture: 'two-finger',
-  scrollSpeed: 100,
+  scrollSpeed: 200,
 };
 
 function getSavedRemoteAutoConnect() {
