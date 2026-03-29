@@ -1,0 +1,53 @@
+{
+  "name": "alarm-clock",
+  "version": "1.0.0",
+  "description": "Desktop Alarm Clock with audio device selection",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64",
+    "rebuild": "electron-rebuild -f -w @jitsi/robotjs"
+  },
+  "dependencies": {
+    "@jitsi/robotjs": "^0.6.21",
+    "ws": "^8.17.0"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^4.0.3",
+    "electron": "latest",
+    "electron-builder": "latest"
+  },
+  "build": {
+    "appId": "com.alarmclock.desktop",
+    "productName": "Alarm Clock",
+    "icon": "Alarm.ico",
+    "files": [
+      "**/*",
+      "!node_modules/.cache",
+      "!dist"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "Alarm.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Alarm Clock",
+      "runAfterFinish": true
+    }
+  }
+}

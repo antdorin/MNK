@@ -23,3 +23,8 @@ Payload/
 
 # macOS
 .DS_Store
+
+# Node/Electron
+node_modules/
+dist/
+dist-new/

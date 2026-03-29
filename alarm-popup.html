@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>⏰ Alarm</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+
+    body {
+      background: #120820;
+      color: #eaeaea;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      animation: glow-pulse 1s infinite alternate;
+    }
+    @keyframes glow-pulse {
+      from { box-shadow: inset 0 0 50px rgba(233,69,96,0.2); }
+      to   { box-shadow: inset 0 0 120px rgba(233,69,96,0.55); }
+    }
+
+    .wrap {
+      text-align: center;
+      padding: 28px 40px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    .icon {
+      font-size: 3rem;
+      display: block;
+      margin-bottom: 10px;
+      animation: ring 0.5s ease-in-out infinite alternate;
+    }
+    @keyframes ring {
+      from { transform: rotate(-14deg); }
+      to   { transform: rotate(14deg); }
+    }
+
+    .label {
+      font-size: 1.45rem;
+      font-weight: 600;
+      color: #e94560;
+      max-width: 420px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: block;
+      margin: 0 auto 4px;
+    }
+
+    .time {
+      font-size: 2.9rem;
+      font-weight: 200;
+      color: #fff;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.04em;
+      margin-bottom: 26px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    button {
+      flex: 1;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 12px 0;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    button:active { transform: scale(0.96); }
+    button:hover  { opacity: 0.85; }
+
+    #snooze-btn  { background: #1e1535; color: #ccc; border: 1px solid #ffffff20; }
+    #dismiss-btn { background: #e94560; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="wrap">
+    <span class="icon">⏰</span>
+    <span class="label" id="alarm-label">Alarm!</span>
+    <p    class="time"  id="alarm-time">--:--</p>
+    <div  class="actions">
+      <button id="snooze-btn">💤 Snooze</button>
+      <button id="dismiss-btn">✓ Dismiss</button>
+    </div>
+  </div>
+  <script src="alarm-popup.js"></script>
+</body>
+</html>

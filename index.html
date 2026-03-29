@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Alarm Clock</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+
+    <!-- Clock Display -->
+    <div class="clock-section">
+      <div id="clock" class="clock">00:00:00</div>
+      <div id="date-display" class="date-display"></div>
+      <div id="timezone-display" class="timezone-display"></div>
+    </div>
+
+    <!-- Audio Device & Volume -->
+    <div class="card">
+      <h2>Audio Settings</h2>
+      <div class="field-row">
+        <label for="audio-device">Output Device</label>
+        <select id="audio-device">
+          <option value="">-- Select Device --</option>
+        </select>
+        <button id="refresh-devices" title="Refresh devices">&#x21BA;</button>
+      </div>
+      <div class="field-row">
+        <label for="volume-slider">Volume</label>
+        <input type="range" id="volume-slider" min="0" max="100" value="80" />
+        <span id="volume-label">80%</span>
+      </div>
+    </div>
+
+    <!-- Alarm List -->
+    <div class="card">
+      <h2>Alarms</h2>
+      <div id="alarm-list" class="alarm-list">
+        <p class="no-alarms">No alarms set.</p>
+      </div>
+      <div class="add-alarm-row">
+        <button id="add-alarm-btn" class="btn-primary">+ Add Alarm</button>
+      </div>
+    </div>
+
+    <!-- Add/Edit Alarm Modal -->
+    <div id="alarm-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2 id="modal-title">Add Alarm</h2>
+
+        <div class="field-row">
+          <label for="alarm-time">Time</label>
+          <input type="time" id="alarm-time" step="1" />
+        </div>
+
+        <div class="field-row">
+          <label for="alarm-label">Label</label>
+          <input type="text" id="alarm-label" placeholder="e.g. Wake up" maxlength="40" />
+        </div>
+
+        <div class="field-row">
+          <label for="alarm-repeat">Repeat</label>
+          <div class="days-row" id="days-row">
+            <button class="day-btn" data-day="0">Su</button>
+            <button class="day-btn" data-day="1">Mo</button>
+            <button class="day-btn" data-day="2">Tu</button>
+            <button class="day-btn" data-day="3">We</button>
+            <button class="day-btn" data-day="4">Th</button>
+            <button class="day-btn" data-day="5">Fr</button>
+            <button class="day-btn" data-day="6">Sa</button>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <label for="alarm-sound">Sound</label>
+          <select id="alarm-sound"></select>
+        </div>
+
+        <div class="field-row">
+          <label for="snooze-minutes">Snooze (min)</label>
+          <input type="number" id="snooze-minutes" value="5" min="1" max="60" />
+        </div>
+
+        <div class="field-row">
+          <label>
+            <input type="checkbox" id="alarm-enabled" checked />
+            Enabled
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button id="modal-save" class="btn-primary">Save</button>
+          <button id="modal-cancel" class="btn-secondary">Cancel</button>
+          <button id="modal-delete" class="btn-danger hidden">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Firing Alarm Modal -->
+    <div id="firing-modal" class="modal hidden">
+      <div class="modal-content firing">
+        <div class="firing-icon">&#x23F0;</div>
+        <h2 id="firing-label">Alarm!</h2>
+        <p id="firing-time" class="firing-time"></p>
+        <div class="modal-actions">
+          <button id="snooze-btn" class="btn-secondary">Snooze</button>
+          <button id="dismiss-btn" class="btn-primary">Dismiss</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Custom Sounds Manager -->
+    <div class="card">
+      <h2>Custom Sounds</h2>
+      <div id="sound-tabs" class="sound-tabs"></div>
+      <div class="add-sound-row">
+        <input type="file" id="sound-file-input" accept="audio/*" class="hidden" />
+        <button id="add-sound-btn" class="btn-secondary">+ Add Sound</button>
+        <button id="test-sound-btn" class="btn-secondary">&#9654; Test</button>
+        <button id="stop-test-btn" class="btn-secondary">&#9646;&#9646; Stop</button>
+      </div>
+    </div>
+
+    <!-- Remote Control -->
+    <div class="card">
+      <h2>Remote Control</h2>
+      <div class="field-row">
+        <label>Connection</label>
+        <span id="remote-status-display" class="remote-status">Starting server…</span>
+      </div>
+      <div class="field-row checkbox-row">
+        <label for="remote-auto-connect">Auto Connect Remote</label>
+        <input type="checkbox" id="remote-auto-connect" checked />
+      </div>
+      <div class="field-row">
+        <label for="touch-primary-action">Single Tap</label>
+        <select id="touch-primary-action">
+          <option value="left">Left Click</option>
+          <option value="right">Right Click</option>
+          <option value="double">Double Left Click</option>
+          <option value="middle">Middle Click</option>
+          <option value="none">Disabled</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label for="touch-secondary-action">Two-Finger Tap</label>
+        <select id="touch-secondary-action">
+          <option value="left">Left Click</option>
+          <option value="right">Right Click</option>
+          <option value="double">Double Left Click</option>
+          <option value="middle">Middle Click</option>
+          <option value="none">Disabled</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label for="touch-long-press-action">Long Press</label>
+        <select id="touch-long-press-action">
+          <option value="left">Left Click</option>
+          <option value="right">Right Click</option>
+          <option value="double">Double Left Click</option>
+          <option value="middle">Middle Click</option>
+          <option value="none">Disabled</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label for="touch-scroll-gesture">Scroll Gesture</label>
+        <select id="touch-scroll-gesture">
+          <option value="two-finger">Two-Finger Scroll</option>
+          <option value="swipe">Vertical Swipe</option>
+          <option value="any">Any Scroll Gesture</option>
+          <option value="none">Disabled</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label for="touch-scroll-speed">Scroll Speed</label>
+        <input type="range" id="touch-scroll-speed" min="1" max="300" value="100" />
+        <span id="touch-scroll-speed-label">100%</span>
+      </div>
+      <p class="remote-hint">Touch gestures now map to mouse click actions. Change the mappings above anytime.</p>
+    </div>
+
+    <!-- Theme Picker -->
+    <div class="card">
+      <h2>Theme</h2>
+      <div class="theme-picker" id="theme-picker">
+        <button class="theme-dot active" data-theme="crimson"  title="Crimson"  style="background:#e94560"></button>
+        <button class="theme-dot"        data-theme="ocean"    title="Ocean"    style="background:#00b4d8"></button>
+        <button class="theme-dot"        data-theme="forest"   title="Forest"   style="background:#2ecc71"></button>
+        <button class="theme-dot"        data-theme="violet"   title="Violet"   style="background:#9b59b6"></button>
+        <button class="theme-dot"        data-theme="amber"    title="Amber"    style="background:#f39c12"></button>
+        <button class="theme-dot"        data-theme="midnight" title="Midnight" style="background:#4a9eff"></button>
+        <button class="theme-dot"        data-theme="sakura"   title="Sakura"   style="background:#ff6b9d"></button>
+        <button class="theme-dot"        data-theme="neon"     title="Neon"     style="background:#39ff14"></button>
+        <button class="theme-dot"        data-theme="copper"   title="Copper"   style="background:#cd7f32"></button>
+        <button class="theme-dot"        data-theme="glacier"  title="Glacier"  style="background:#a8d8ea"></button>
+        <button class="theme-dot"        data-theme="slate"    title="Slate"    style="background:#555555"></button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
